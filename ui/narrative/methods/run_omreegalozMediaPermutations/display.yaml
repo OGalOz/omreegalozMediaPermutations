@@ -1,0 +1,38 @@
+#
+# define display information
+#
+name: Multiple Media FBA
+tooltip: |
+    Run FBA with many different media that vary slightly to learn about the effects of specific compounds.
+
+screenshots: []
+
+icon: icon.png
+
+#
+# define a set of similar apps that might be useful to the user
+#
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    metabolic_model_input_ref :
+        ui-name : |
+            FBA Model
+        short-hint : |
+            The FBA Model you use to run FBA on with the various media.
+
+    base_media_ref :
+        ui-name:
+            Base Media
+        short-hint:
+            All variable compounds will be added to this base media
+    variable_media_ref :
+        ui-name: |
+           Variable Compounds in Media Format 
+        short-hint: |
+            Should be less than 12 compounds.
+
+description : |
+    <p> This app runs FBA with or without various compounds. For example, if you include the compounds "a" and "b" in the Variable Compounds, then it will run FBA with compounds "a" and "b" together, then it will run FBA with only "a", then only "b", then neither, and compare the results. </p>
