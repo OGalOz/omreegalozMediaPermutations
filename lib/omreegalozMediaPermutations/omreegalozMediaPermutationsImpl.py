@@ -83,7 +83,7 @@ class omreegalozMediaPermutations:
 
         ws = Workspace(self.ws_url, token=token)
 
-
+        '''
         #Downloading and naming variable media:
         # DOWNLOAD TSV FILE OF MEDIA AND SAVE IT TO TEMP WORK DIR
         variable_media_data = ws.get_objects2({'objects':[{'ref': variable_media_ref}]})
@@ -91,6 +91,8 @@ class omreegalozMediaPermutations:
         f = open(var_media_tsv_file_location)
         f.write(str(variable_media_data))
         f.close()
+        '''
+        var_media_tsv_file_location = '/kb/module/data/tmpmedia/tstm.tsv'
 
         
 
