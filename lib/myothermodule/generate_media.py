@@ -18,11 +18,25 @@ logging.basicConfig(level=logging.DEBUG)
 # compounds	name	formula		minFlux		maxFlux		concentration
 def generate_compound_permutations(filename):
     cmpnd_list_d2 = tsv_to_d2_list(filename)[1:]
+
+    #cmpnd_list_d2 looks like: [[compound id, name, formula, minFlux, maxFlux, concentration],[comp..]] 
     media_list_d3 = media_permutations(cmpnd_list_d2)
-    cmpnd_ids_d2 = list_of_media_ids(media_list_d3)
-    return cmpnd_ids_d2
+    #in media_list_d3, each permutation is a cmpnd_list_d2.
+    prepared_tuple_list = prepare_for_edit_media_function(media_list_d3)
+    return prepared_tuple_list
     
 
+def prepare_for_edit_media_function(media_list_d3):
+
+    #The input params for edit media should be a list of tuples that look like (trying list instead of tuple now):
+    #(cmpnd_id, concentration, float min_flux, float max_flux)
+    prepared_list_d3 = []
+    for cmpnd_list_d2 in media_list_d3:
+        tuple_list = []
+        for cmpnd in cmpnd_list_d2:
+            tuple_list.append({ "add_id" : cmpnd[0],"add_concentration" : float(cmpnd[5]), "add_minflux" : float(cmpnd[3]), "add_maxflux": float(cmpnd[4])})
+        prepared_list_d3.append(tuple_list)
+    return prepared_list_d3
 
 
 

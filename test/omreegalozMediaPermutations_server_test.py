@@ -69,15 +69,18 @@ class omreegalozMediaPermutationsTest(unittest.TestCase):
     '''
     def test_Ecoli(self):
 
-        mm_ref = "32829/12/1" #E_Coli_Metabolic_Model_NMS_No_Glucose
+        genome_ref = "" #E_Coli Genome Object
 
-        base_media_ref = "32829/10/1" #MinimalGrowthNMS_NoGlucose
+        mm_ref = "33008/9/1" #E_Coli_Metabolic_Model_NMS_No_Glucose
 
-        variable_media_ref = ""     #This is the list of compounds that will be interchanged to see how it affects FBA
+        base_media_ref = "33008/4/1" #MinimalGrowthNMS_NoGlucose
+
+        variable_media_ref = "33008/3/1"     #This is the list of compounds that will be interchanged to see how it affects FBA
 
         ret = self.serviceImpl.run_omreegalozMediaPermutations(self.ctx, {
             'workspace_name': self.wsName,
-            'metabolic_model_input_ref': mm_ref,
+            'metabolic_model_ref': mm_ref,
+            'genome_ref': genome_ref,
             'base_media_ref': base_media_ref,
             'variable_media_ref': variable_media_ref
 
