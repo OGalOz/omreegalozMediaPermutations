@@ -33,6 +33,11 @@ parameters :
            Variable Compounds in Media Format 
         short-hint: |
             Should be less than 12 compounds.
+    run_type :
+        ui-name : |
+            Run Type
+        short-hint : |
+            Either run FBA on all combinations of extra compounds or on one of each.
 
 description : |
     <p> This app runs FBA with or without various compounds. For example, if you include the compounds "a" and "b" in the Variable Compounds, then it will run FBA with compounds "a" and "b" together, then it will run FBA with only "a", then only "b", then neither, and compare the results. </p>

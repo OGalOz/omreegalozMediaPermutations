@@ -8,20 +8,27 @@ def check_params(params):
             metabolic_model_ref = params['metabolic_model_ref']
         else:
             logging.critical("the metabolic model reference number is not in the params. Cannot continue.")
-            raise Exception("Passed parameters failed. Error 1")
+            raise Exception("Passed parameters failed. Error CP1")
 
         #Getting Base Media:
         if "base_media_ref" in params:
             base_media_ref = params["base_media_ref"]
         else:
             logging.critical("the base media reference number is not in the params. Cannot continue.")
-            raise Exception("Passed parameters failed. Error 2")
+            raise Exception("Passed parameters failed. Error CP2")
         if "variable_media_ref" in params:
             variable_media_upa = params["variable_media_ref"]
         else:
             logging.critical("the variable media reference number is not in the params. Cannot continue.")
-            raise Exception("Passed parameters failed. Error 3")
-        return metabolic_model_ref, base_media_ref, variable_media_upa
+            raise Exception("Passed parameters failed. Error CP3")
+        if "run_type" in params:
+            run_type = params["run_type"]
+        else:
+            logging.critical("run type not included in parameters")
+            raise Exception("Passed parameters failed. Error CP4")
+        return metabolic_model_ref, base_media_ref, variable_media_upa, run_type
+        
+
 
 
 

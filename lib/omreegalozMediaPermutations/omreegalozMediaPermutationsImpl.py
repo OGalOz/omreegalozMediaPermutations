@@ -68,7 +68,8 @@ class omreegalozMediaPermutations:
         fba_t = fba_tools(self.callback_url)
 
         #Check parameters here: Input should be a genome object instead of metabolic model
-        metabolic_model_ref, base_media_ref, variable_media_ref = check_params(params)
+        metabolic_model_ref, base_media_ref, variable_media_ref, run_type = check_params(params)
+        logging.debug("RUN TYPE: " + run_type)
 
                 
 

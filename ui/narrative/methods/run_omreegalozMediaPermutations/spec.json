@@ -45,7 +45,26 @@
             "text_options": {
                 "valid_ws_types": [ "KBaseBiochem.Media"]
             }
+        },
+        {
+            "id": "run_type",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [""],
+            "field_type": "drop-down",
+            "dropdown_options":{
+                 "options": [{
+                     "value": "all",
+                     "display": "all permutations"
+                 }, {
+                     "value": "each",
+                     "display": "each individually"
+                 }]
+                }
+            
         }
+
     ],
     "behavior": {
         "service-mapping": {
