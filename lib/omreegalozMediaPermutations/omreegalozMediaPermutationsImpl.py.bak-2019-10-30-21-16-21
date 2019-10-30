@@ -12,7 +12,7 @@ from myothermodule.temporary import upload_file
 #from random import randint
 #END_HEADER
 
-
+logging.basicConfig(level=logging.DEBUG)
 class omreegalozMediaPermutations:
     '''
     Module Name:
@@ -28,9 +28,9 @@ class omreegalozMediaPermutations:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.2"
-    GIT_URL = "https://github.com/OGalOz/omreegalozMediaPermutations.git"
-    GIT_COMMIT_HASH = "a2e3f761df5f28c9461894be36a04818e973a463"
+    VERSION = "0.0.1"
+    GIT_URL = ""
+    GIT_COMMIT_HASH = ""
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
