@@ -177,7 +177,7 @@ class omreegalozMediaPermutations:
         
         output = {
             'report_name': 'Temporary',
-            'report_ref': 'Unknown',
+            'report_ref': new_comp_fba_ref,
         }
         #END run_omreegalozMediaPermutations
 
