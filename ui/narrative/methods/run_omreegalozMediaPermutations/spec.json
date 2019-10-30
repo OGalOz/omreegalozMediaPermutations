@@ -60,8 +60,8 @@
                     "narrative_system_variable": "workspace_id",
                     "target_property": "workspace_id"
                 },{
-                    "input_parameter": "metabolic_model_input_ref",
-                    "target_property": "metabolic_model_input_ref",
+                    "input_parameter": "metabolic_model_ref",
+                    "target_property": "metabolic_model_ref",
                     "target_type_transform": "resolved-ref"
                 },{
                     "input_parameter": "base_media_ref",

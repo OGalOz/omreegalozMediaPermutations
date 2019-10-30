@@ -17,7 +17,7 @@ icon: icon.png
 # Configure the display and description of parameters
 #
 parameters :
-    metabolic_model_input_ref :
+    metabolic_model_ref :
         ui-name : |
             FBA Model
         short-hint : |
