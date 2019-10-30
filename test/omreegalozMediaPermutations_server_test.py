@@ -67,7 +67,7 @@ class omreegalozMediaPermutationsTest(unittest.TestCase):
         ret = self.serviceImpl.run_omreegalozMediaPermutations(self.ctx, {'workspace_name': self.wsName,
                                                              'parameter_1': 'Hello World!'})
     '''
-    def test_Ecoli(self):
+    def test_Ecoli_each(self):
 
         genome_ref = "" #E_Coli Genome Object
 
@@ -77,17 +77,43 @@ class omreegalozMediaPermutationsTest(unittest.TestCase):
 
         variable_media_ref = "33008/3/1"     #This is the list of compounds that will be interchanged to see how it affects FBA
 
+        
+        run_type = "each" #Either 'all' or 'each'
+
         ret = self.serviceImpl.run_omreegalozMediaPermutations(self.ctx, {
             'workspace_name': self.wsName,
             'metabolic_model_ref': mm_ref,
             'genome_ref': genome_ref,
             'base_media_ref': base_media_ref,
-            'variable_media_ref': variable_media_ref
+            'variable_media_ref': variable_media_ref,
+            'run_type': run_type
+
+        })
+    """
+    def test_Ecoli_all(self):
+
+        genome_ref = "" #E_Coli Genome Object
+
+        mm_ref = "33008/30/1" #E_Coli_Metabolic_Model_NMS_No_Glucose
+
+        base_media_ref = "33008/4/1" #MinimalGrowthNMS_NoGlucose
+
+        variable_media_ref = "33008/3/1"     #This is the list of compounds that will be interchanged to see how it affects FBA
+
+        
+        run_type = "all" #Either 'all' or 'each'
+
+        ret = self.serviceImpl.run_omreegalozMediaPermutations(self.ctx, {
+            'workspace_name': self.wsName,
+            'metabolic_model_ref': mm_ref,
+            'genome_ref': genome_ref,
+            'base_media_ref': base_media_ref,
+            'variable_media_ref': variable_media_ref,
+            'run_type' = run_type
 
         })
 
-
-
+    """
     """
     def test_SHW_Metabolic_Model(self):
         

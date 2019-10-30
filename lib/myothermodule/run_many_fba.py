@@ -6,13 +6,13 @@ import logging
 
 #The compounds file must be a TSV media item in the previous form.
 #There is the base media, on top of which the variable media is added.
-def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, base_media_name):
+def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, base_media_name, run_type):
 
     logging.info("BASE_MEDIA NAME:")
     logging.info(base_media_name)
 
     # From the variable media, we create a list of the different permutations in tuple form.
-    prepared_tuple_list_d3 = generate_compound_permutations(var_media_file_name)
+    prepared_tuple_list_d3 = generate_compound_permutations(var_media_file_name, run_type)
     
     # First, we Generate a Metabolic Model from the Genome and gapfill it on the base media:
     # parameters for build metabolic model:

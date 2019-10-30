@@ -16,13 +16,20 @@ logging.basicConfig(level=logging.DEBUG)
 
 # The input file to this must be a tsv file in the same media format as the other media, with the first column being
 # compounds	name	formula		minFlux		maxFlux		concentration
-def generate_compound_permutations(filename):
+def generate_compound_permutations(filename, run_type):
     cmpnd_list_d2 = tsv_to_d2_list(filename)[1:]
 
+
+
     #cmpnd_list_d2 looks like: [[compound id, name, formula, minFlux, maxFlux, concentration],[comp..]] 
-    media_list_d3 = media_permutations(cmpnd_list_d2)
-    #in media_list_d3, each permutation is a cmpnd_list_d2.
-    prepared_tuple_list = prepare_for_edit_media_function(media_list_d3)
+    if run_type == "all":
+        media_list_d3 = media_permutations(cmpnd_list_d2)
+        prepared_tuple_list = prepare_for_edit_media_function(media_list_d3)
+
+    # If you want only media with one of each new compound.
+    elif run_type == "each":
+        media_list_d3 = one_compound_at_a_time(cmpnd_list_d2)
+        prepared_tuple_list = prepare_for_edit_media_function(media_list_d3)
     return prepared_tuple_list
     
 
@@ -37,6 +44,12 @@ def prepare_for_edit_media_function(media_list_d3):
             tuple_list.append({ "add_id" : cmpnd[0],"add_concentration" : float(cmpnd[5]), "add_minflux" : float(cmpnd[3]), "add_maxflux": float(cmpnd[4])})
         prepared_list_d3.append(tuple_list)
     return prepared_list_d3
+
+
+
+def one_compound_at_a_time(cmpnd_list_d2):
+    media_list_d3 = [[cmpnd] for cmpnd in cmpnd_list_d2]
+    return media_list_d3
 
 
 

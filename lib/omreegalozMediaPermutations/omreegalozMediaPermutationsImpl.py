@@ -130,7 +130,7 @@ class omreegalozMediaPermutations:
             logging.debug("base media object name: " + base_med_object_name)
             
             #This is where FBA is called:
-            results_refs_and_names = run_multiple_media_fba(fba_t, run_dict, var_media_tsv_file_location, base_med_object_name)
+            results_refs_and_names = run_multiple_media_fba(fba_t, run_dict, var_media_tsv_file_location, base_med_object_name, run_type)
             fba_ids_list = []
             for fba_result in results_refs_and_names:
                 ref_num = fba_result[0]
