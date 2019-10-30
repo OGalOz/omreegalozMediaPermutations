@@ -17,9 +17,11 @@ logging.basicConfig(level=logging.DEBUG)
 # The input file to this must be a tsv file in the same media format as the other media, with the first column being
 # compounds	name	formula		minFlux		maxFlux		concentration
 def generate_compound_permutations(filename, run_type):
-    cmpnd_list_d2 = tsv_to_d2_list(filename)[1:]
+    file_list = tsv_to_d2_list(filename)
+    if len(file_list) <= 1:
+        raise Exception("Media File contains no compounds or is formatted incorrectly.")
 
-
+    cmpnd_list_d2 = file_list[1:]
 
     #cmpnd_list_d2 looks like: [[compound id, name, formula, minFlux, maxFlux, concentration],[comp..]] 
     if run_type == "all":

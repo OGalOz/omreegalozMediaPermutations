@@ -28,7 +28,7 @@ class omreegalozMediaPermutations:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.0.1"
+    VERSION = "0.0.2"
     GIT_URL = ""
     GIT_COMMIT_HASH = ""
 
@@ -59,7 +59,11 @@ class omreegalozMediaPermutations:
         # return variables are: output
         #BEGIN run_omreegalozMediaPermutations
         report = KBaseReport(self.callback_url)
-        #report_info = report.create({'report': reportObj, 'workspace_name': params['workspace_name']})
+
+        create_ext_report_params = {'message': "Compare FBA Results"}
+        create_ext_report_params["workspace_name"] = params['workspace_name']
+        
+
 
         token = os.environ.get('KB_AUTH_TOKEN', None)
 
@@ -160,24 +164,21 @@ class omreegalozMediaPermutations:
             f = open(os.path.join(self.shared_folder, result_filename),"w")
             f.write(str(new_obj))
             f.close()
+            create_ext_report_params['objects_created'] = [{'ref': new_comp_fba_ref, 'description': "The fba comparison output"}]
 
-
-        
+        #Did not recognize type as FBA Model:
         else:
             logging.critical("Wrong object type!")
             raise Exception("Could not recognize type of object!")
 
-   
-        #Create various forms of media:
-        
+        report_info = report.create_extended_report(create_ext_report_params)
 
 
 
-        #Download FBA Model of Organism
         
         output = {
-            'report_name': 'Temporary',
-            'report_ref': new_comp_fba_ref,
+            'report_name': 'MediaPermutations Report',
+            'report_ref': report_info,
         }
         #END run_omreegalozMediaPermutations
 
