@@ -71,7 +71,7 @@ class omreegalozMediaPermutationsTest(unittest.TestCase):
 
         genome_ref = "" #E_Coli Genome Object
 
-        mm_ref = "33008/9/1" #E_Coli_Metabolic_Model_NMS_No_Glucose
+        mm_ref = "33008/30/1" #E_Coli_Metabolic_Model_NMS_No_Glucose
 
         base_media_ref = "33008/4/1" #MinimalGrowthNMS_NoGlucose
 
