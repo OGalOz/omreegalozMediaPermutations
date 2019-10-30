@@ -80,13 +80,16 @@ class omreegalozMediaPermutationsTest(unittest.TestCase):
         
         run_type = "each" #Either 'all' or 'each'
 
+        output_name = "FBACompare_Test_Output"
+
         ret = self.serviceImpl.run_omreegalozMediaPermutations(self.ctx, {
             'workspace_name': self.wsName,
             'metabolic_model_ref': mm_ref,
             'genome_ref': genome_ref,
             'base_media_ref': base_media_ref,
             'variable_media_ref': variable_media_ref,
-            'run_type': run_type
+            'run_type': run_type,
+            'output_name' : output_name
 
         })
     """

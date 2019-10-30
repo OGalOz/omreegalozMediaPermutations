@@ -72,7 +72,7 @@ class omreegalozMediaPermutations:
         fba_t = fba_tools(self.callback_url)
 
         #Check parameters here: Input should be a genome object instead of metabolic model
-        metabolic_model_ref, base_media_ref, variable_media_ref, run_type = check_params(params)
+        metabolic_model_ref, base_media_ref, variable_media_ref, run_type, output_name = check_params(params)
         logging.debug("RUN TYPE: " + run_type)
 
                 
@@ -153,7 +153,7 @@ class omreegalozMediaPermutations:
 
             #HERE WE RUN COMPARE FBA:
             
-            comp_fba_params = {"fba_id_list": fba_ids_list, "fbacomparison_output_id": 'Compare_FBAs_MP'}
+            comp_fba_params = {"fba_id_list": fba_ids_list, "fbacomparison_output_id": output_name}
             comp_fba_params['workspace'] = ws_main
             comp_fba_ref_dict = fba_t.compare_fba_solutions(comp_fba_params)
             logging.info("COMPARE FBA RESULTS:")

@@ -26,7 +26,13 @@ def check_params(params):
         else:
             logging.critical("run type not included in parameters")
             raise Exception("Passed parameters failed. Error CP4")
-        return metabolic_model_ref, base_media_ref, variable_media_upa, run_type
+        if "output_name" in params:
+            output_name = params["output_name"]
+        else:
+            logging.critical("run type not included in parameters")
+            raise Exception("Passed parameters failed. Error CP5")
+
+        return metabolic_model_ref, base_media_ref, variable_media_upa, run_type, output_name
         
 
 
