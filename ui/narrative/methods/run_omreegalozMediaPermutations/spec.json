@@ -11,7 +11,7 @@
     },
     "parameters": [ 
         {
-            "id": "metabolic_model_input_ref",
+            "id": "metabolic_model_ref",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,

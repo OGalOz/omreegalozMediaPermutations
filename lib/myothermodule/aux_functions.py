@@ -7,20 +7,20 @@ def check_params(params):
         if "metabolic_model_ref" in params:
             metabolic_model_ref = params['metabolic_model_ref']
         else:
-            logging.critical("the Genome reference number is not in the params. Cannot continue.")
-            raise Exception("Passed parameters failed.")
+            logging.critical("the metabolic model reference number is not in the params. Cannot continue.")
+            raise Exception("Passed parameters failed. Error 1")
 
         #Getting Base Media:
         if "base_media_ref" in params:
             base_media_ref = params["base_media_ref"]
         else:
             logging.critical("the base media reference number is not in the params. Cannot continue.")
-            raise Exception("Passed parameters failed.")
+            raise Exception("Passed parameters failed. Error 2")
         if "variable_media_ref" in params:
             variable_media_upa = params["variable_media_ref"]
         else:
             logging.critical("the variable media reference number is not in the params. Cannot continue.")
-            raise Exception("Passed parameters failed.")
+            raise Exception("Passed parameters failed. Error 3")
         return metabolic_model_ref, base_media_ref, variable_media_upa
 
 
