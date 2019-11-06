@@ -6,7 +6,7 @@ from biokbase.workspace.client import Workspace
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.fba_toolsClient import fba_tools
 from installed_clients.kb_uploadmethodsClient import kb_uploadmethods
-from myothermodule.run_many_fba import create_sample_dict_for_run_fba, run_multiple_media_fba, test_run_fba, create_sample_dict_for_build_mm
+from myothermodule.run_many_fba import run_multiple_media_fba, test_run_fba, create_sample_dict_for_build_mm
 from myothermodule.aux_functions import check_params
 from myothermodule.temporary import upload_file
 #from random import randint
@@ -123,7 +123,7 @@ class omreegalozMediaPermutations:
         if metabolic_model_object_type[:17] == "KBaseFBA.FBAModel":
             logging.info('Succesfully recognized type as FBA Model')
 
-            run_dict = create_sample_dict_for_run_fba()
+            run_dict = dict() 
             #CHECK THE FOLLOWING:
             logging.debug('obj name:' + metabolic_model_object_name)
             run_dict["fbamodel_id"] = metabolic_model_object_name
@@ -159,11 +159,11 @@ class omreegalozMediaPermutations:
             logging.info("COMPARE FBA RESULTS:")
             logging.info(comp_fba_ref_dict)
             new_comp_fba_ref = comp_fba_ref_dict['new_fbacomparison_ref']
-            new_obj = ws.get_objects2({'objects':[{'ref': new_comp_fba_ref}]})
-            result_filename =  'Compared_FBA_Results.txt'
-            f = open(os.path.join(self.shared_folder, result_filename),"w")
-            f.write(str(new_obj))
-            f.close()
+            #new_obj = ws.get_objects2({'objects':[{'ref': new_comp_fba_ref}]})
+            #result_filename =  'Compared_FBA_Results.txt'
+            #f = open(os.path.join(self.shared_folder, result_filename),"w")
+            #f.write(str(new_obj))
+            #f.close()
             create_ext_report_params['objects_created'] = [{'ref': new_comp_fba_ref, 'description': "The fba comparison output"}]
 
         #Did not recognize type as FBA Model:
@@ -173,12 +173,13 @@ class omreegalozMediaPermutations:
 
         report_info = report.create_extended_report(create_ext_report_params)
 
+        logging.debug(report_info)
 
 
         
         output = {
-            'report_name': 'MediaPermutations Report',
-            'report_ref': report_info,
+            'report_name': report_info['name'],
+            'report_ref': report_info['ref'],
         }
         #END run_omreegalozMediaPermutations
 

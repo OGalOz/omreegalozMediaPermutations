@@ -7,7 +7,7 @@ import logging
 #The compounds file must be a TSV media item in the previous form.
 #There is the base media, on top of which the variable media is added.
 def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, base_media_name, run_type):
-
+    logging.basicConfig(level=logging.DEBUG)
     logging.info("BASE_MEDIA NAME:")
     logging.info(base_media_name)
 
@@ -16,18 +16,6 @@ def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, ba
     
     # First, we Generate a Metabolic Model from the Genome and gapfill it on the base media:
     # parameters for build metabolic model:
-    #bmm_params = create_sample_dict_for_build_mm()
-    #workspace params:
-    ws_name = input_dict["workspace"]
-       
-
-    # For each list of compounds to add to the media, we:
-    # create a new media using "Edit Media"
-    # Build the metabolic model using the genome and the new media
-    # Run FBA with the newly gapfilled metabolic model and the new media.
-    # The workspace is the same for everything.
-
-    # We create a list to store the results from FBA in order to run compare FBA.
     FBA_Results_Refs = []
 
 
@@ -40,11 +28,12 @@ def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, ba
 
         #Prepare EDIT MEDIA params:
         edit_media_params = create_sample_dict_for_edit_media()
-        edit_media_params["workspace"] = input_dict["workspace"]
-        edit_media_params["media_workspace"] = input_dict["workspace"]
+        edit_media_params["workspace"] = main_workspace
+        edit_media_params["media_workspace"] = main_workspace
         edit_media_params["media_id"] = base_media_name 
         edit_media_params["compounds_to_add"] = compounds_tuples_d2
-        edit_media_params["media_output_id"] = base_media_name + 'output' + str(i+1)
+        new_media_id = base_media_name + 'output' + str(i+1)
+        edit_media_params["media_output_id"] = new_media_id
 
         #RUN EDIT MEDIA:
         edit_media_result_dict = fba_tools_object.edit_media(edit_media_params)
@@ -64,29 +53,68 @@ def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, ba
         met_model["template_workspace"] = input_dict["workspace"]
         """
 
+        #GAPFILL METABOLIC MODEL USING NEW MEDIA
+        gapfill_params = create_dict_for_gapfill(input_dict, i, new_media_ref, new_media_id)
 
+        gapfill_output = fba_tools_object.gapfill_metabolic_model(gapfill_params)
+        
+        logging.debug(gapfill_output)
+        
         #Run FBA on the new media
-        new_input_dict = input_dict.copy()
-        new_input_dict["fba_output_id"] = new_input_dict["fba_output_id"] + "_on_" + edit_media_params["media_output_id"]
-        new_input_dict["media_id"] = new_media_ref
-        results_from_fba = fba_tools_object.run_flux_balance_analysis(new_input_dict)
+        fba_input_dict = create_dict_for_run_fba(gapfill_params["fbamodel_output_id"], main_workspace)
+
+        logging.debug(fba_input_dict)
+        fba_input_dict["fba_output_id"] = gapfill_params["fbamodel_output_id"] + "_on_" + edit_media_params["media_output_id"]
+        fba_input_dict["media_id"] = new_media_ref
+        fba_input_dict["media_workspace"] = main_workspace
+        logging.debug(fba_input_dict)
+
+        
+        results_from_fba = fba_tools_object.run_flux_balance_analysis(fba_input_dict)
         new_ref_id = results_from_fba['new_fba_ref']
-        FBA_Results_Refs.append([new_ref_id, new_input_dict["fba_output_id"], results_from_fba])
+        FBA_Results_Refs.append([new_ref_id, fba_input_dict["fba_output_id"], results_from_fba])
         
 
     return FBA_Results_Refs
 
 
-#The following function is currently not in use.
-def run_build_mm(fba_tools_object, mm_input_dict):
-    results = fba_tools_object.build_metabolic_model(mm_input_dict)
-    
-    #Results Description: "new_fbamodel_ref", "new_fba_ref", "number_gapfilled_reactions", "number_removed_biomass_compounds"
-    fbamodel_ref = results["new_fbamodel_ref"]
-
-    return fbamodel_ref
 
 
+# GF means that all these parameters matter for the gapfilling function.
+# Parameters listed: https://github.com/kbaseapps/fba_tools/blob/master/fba_tools.spec
+def create_dict_for_gapfill(input_dict, i, new_media_ref, new_media_id):
+    ws_main = input_dict["workspace"]
+    sd = dict()
+
+    sd["fbamodel_id"] = input_dict["fbamodel_id"]
+    sd["fbamodel_workspace"] = ws_main
+    sd["media_id"] = new_media_id
+    sd["media_workspace"] = ws_main
+    sd["target_reaction"] = "bio1" #TARGET REACTION VARIABLE?
+    sd["fbamodel_output_id"] = input_dict["fbamodel_id"] + "GF" + str(i)        
+    sd["workspace"] = ws_main
+    #sd["thermodynamic_constraints"] = False #bool - GF
+    #sd["comprehensive_gapfill"] = True #bool - GF
+    #sd["soure_fbamodel_id"] =  #str - GF
+    #sd["source_fbamodel_workspace"] = #str - GF
+
+
+    sd["custom_bound_list"] = [] #GF
+    sd["media_supplement_list"] = [] #GF
+    sd["feature_ko_list"] = []
+    sd["reaction_ko_list"] = []
+
+    #sd["expseries_id"] = None #GF
+    #sd["expseries_workspace"] = #workspace_name
+    #sd["expression_condition"] = [] #GF (string?)
+    #sd["exp_threshold_percentile"] = 0.5
+    #sd["exp_threshold_margin"] = 0.1
+    #sd["activation_coefficient"] = 0.5
+    #sd["omega"] =  #float - GF
+    #sd["objective_Fraction"] = #float - GF
+    sd["minimum_target_flux"] = 0.1 #float -GF
+    #sd["number_of_solutions"] = #int - GF
+    return sd
 
 def create_sample_dict_for_edit_media():
     sd = dict()
@@ -99,27 +127,54 @@ def create_sample_dict_for_edit_media():
     return sd
 
 
-def create_sample_dict_for_run_fba():
+def create_dict_for_run_fba(gf_fba_model_id, ws_main):
     sd = dict()
-    sd["fva"] = 1
-    sd["simulate_ko"] = 0 
-    sd["feature_ko_list"] = []
+    sd["fbamodel_id"] = gf_fba_model_id
+    sd["fbamodel_workspace"] = ws_main
+    #sd["media_id"] = media_id - This is done elsewhere
+    #sd["media_workspace"] = ws_main - Done elsewhere
     sd["target_reaction"] = "bio1"
-    sd["reaction_ko_list"] = []
-    sd["custom_bound_list"] = []
-    sd["media_supplement_list"] = []
-    sd["expseries_id"] = None
-    sd["expression_condition"] = []
-    sd["exp_threshold_percentile"] = 0.5
-    sd["exp_threshold_margin"] = 0.1
-    sd["activation_coefficient"] = 0.5
+    #sd["fba_output_id"] = fba_output_id - this is done elsewhere
+    sd["workspace"] = ws_main
+    #sd["thermodynamic_constraints"]=
+    sd["fva"] = 1 #needed
+    sd["simulate_ko"] = 0 #needed
+    #sd["find_min_media"] = 0 #Bool
+    #sd["all_reversible"] = #Bool
+    sd["feature_ko_list"] = [] #needed
+    sd["reaction_ko_list"] = [] #needed
+    sd["custom_bound_list"] = [] #needed
+    sd["media_supplement_list"] = [] #needed
+    sd["expseries_id"] = None #needed
+    #sd["expseries_workspace"] = None
+    sd["expression_condition"] = [] #needed
+    sd["exp_threshold_percentile"] = 0.5 #needed
+    sd["exp_threshold_margin"] = 0.1 #needed
+    sd["activation_coefficient"] = 0.5 #needed
+    #sd["omega"] = 
+    #sd["objective_fraction"] = 
     sd["max_c_uptake"] = None
     sd["max_n_uptake"] = None
     sd["max_p_uptake"] = None
     sd["max_s_uptake"] = None
-    sd["max_o_uptake"] = None
-    sd["minimize_flux"] = 1
+    sd["max_o_uptake"] = None #needed
+    #sd["default_max_uptake"] = 
+    sd["minimize_flux"] = 1 #needed
+    #sd["notes"] = #String
+    #sd["massbalance"] = #String
     return sd
+
+
+
+
+
+
+
+
+
+
+
+
 
 def create_sample_dict_for_build_mm(genome_ws, base_media_ws, ws_main, template_ws, expseries_ws):
     sd = dict()

@@ -45,4 +45,16 @@ parameters :
             The name of your output FBA-Comparison Object.
 
 description : |
-    <p> This app runs FBA with or without various compounds. For example, if you include the compounds "a" and "b" in the Variable Compounds, then it will run FBA with compounds "a" and "b" together, then it will run FBA with only "a", then only "b", then neither, and compare the results. </p>
+    <p> This app runs FBA with or without various compounds on a metabolic model (FBAModel). 
+    It uses the apps Run Metabolic Model, Edit Media, and Compare FBA, all from fba_tools.
+    The way to use it would be first to add a Metabolic Model, e.g. a gapfilled E-Coli model.
+    Second, you choose a base media on which all the FBAs run e.g.  MinimalNMS. 
+    Third, you choose a variable media file which includes extra compounds to use - this should be a relatively small file,
+    with up to 12 compounds.
+    Then you decide if you want to run FBA on each compound individually, or all combinations of compounds.
+    For example, if you ran individually, if you had compounds "A,B,C" in the variable media file,
+    then you would run FBA on the Base Media + "A", Base Media + "B", and Base Media + "C".
+    If you ran all combinations instead of individually with the same compounds ("A","B","C"),
+    Then it would run 8 different FBA, one with "A,B,C", "A,B", "A,C" etc. until it ran FBA on just the base media.
+    In other words it would run on the power set of the compounds. </p>
+    
