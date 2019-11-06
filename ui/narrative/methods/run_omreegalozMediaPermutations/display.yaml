@@ -46,8 +46,8 @@ parameters :
 
 description : |
     <p> This app runs FBA with or without various compounds on a metabolic model (FBAModel). 
-    It uses the apps Run Metabolic Model, Edit Media, and Compare FBA, all from fba_tools.
-    The way to use it would be first to add a Metabolic Model, e.g. a gapfilled E-Coli model.
+It uses the apps "Edit Media", "Gapfill Metabolic Model", "Run FBA", and "Compare FBA", all from fba_tools.
+    The way to use it would be first to add a Metabolic Model, e.g. a non-gapfilled E-Coli model.
     Second, you choose a base media on which all the FBAs run e.g.  MinimalNMS. 
     Third, you choose a variable media file which includes extra compounds to use - this should be a relatively small file,
     with up to 12 compounds.
