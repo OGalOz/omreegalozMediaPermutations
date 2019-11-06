@@ -18,23 +18,23 @@ def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, ba
     # parameters for build metabolic model:
     FBA_Results_Refs = []
 
-
+    media_to_compounds_str = ''
     main_workspace = input_dict["workspace"]
     for i in range(len(prepared_tuple_list_d3)):
-        compounds_tuples_d2 = prepared_tuple_list_d3[i]
+        compounds_dicts_d2 = prepared_tuple_list_d3[i]
         logging.info("Compound Tuples:")
-        logging.info(compounds_tuples_d2)
-
+        logging.info(compounds_dicts_d2)
+        
 
         #Prepare EDIT MEDIA params:
         edit_media_params = create_sample_dict_for_edit_media()
         edit_media_params["workspace"] = main_workspace
         edit_media_params["media_workspace"] = main_workspace
         edit_media_params["media_id"] = base_media_name 
-        edit_media_params["compounds_to_add"] = compounds_tuples_d2
+        edit_media_params["compounds_to_add"] = compounds_dicts_d2
         new_media_id = base_media_name + 'output' + str(i+1)
         edit_media_params["media_output_id"] = new_media_id
-
+        media_to_compounds_str += compound_string_from_compounds_dicts_d2(new_media_id, compounds_dicts_d2)
         #RUN EDIT MEDIA:
         edit_media_result_dict = fba_tools_object.edit_media(edit_media_params)
         logging.info(edit_media_result_dict)
@@ -75,10 +75,15 @@ def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, ba
         FBA_Results_Refs.append([new_ref_id, fba_input_dict["fba_output_id"], results_from_fba])
         
 
-    return FBA_Results_Refs
+    return [FBA_Results_Refs, media_to_compounds_str]
 
-
-
+def compound_string_from_compounds_dicts_d2(media_name, compounds_dicts_d2):
+    compound_string = ''
+    for compound_dict in compounds_dicts_d2:
+        logging.debug(compound_dict)
+        #unsure what compound is
+        compound_string += compound_dict['add_id'] + ', '
+    return media_name + ": " + compound_string[:-2] + '. \n'
 
 # GF means that all these parameters matter for the gapfilling function.
 # Parameters listed: https://github.com/kbaseapps/fba_tools/blob/master/fba_tools.spec

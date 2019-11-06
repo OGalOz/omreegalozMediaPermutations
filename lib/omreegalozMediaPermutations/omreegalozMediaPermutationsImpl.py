@@ -134,7 +134,9 @@ class omreegalozMediaPermutations:
             logging.debug("base media object name: " + base_med_object_name)
             
             #This is where FBA is called:
-            results_refs_and_names = run_multiple_media_fba(fba_t, run_dict, var_media_tsv_file_location, base_med_object_name, run_type)
+            RESULTS = run_multiple_media_fba(fba_t, run_dict, var_media_tsv_file_location, base_med_object_name, run_type)
+            results_refs_and_names = RESULTS[0]
+            media_to_compounds_str = RESULTS[1]
             fba_ids_list = []
             for fba_result in results_refs_and_names:
                 ref_num = fba_result[0]
@@ -170,8 +172,9 @@ class omreegalozMediaPermutations:
         else:
             logging.critical("Wrong object type!")
             raise Exception("Could not recognize type of object!")
-
+        create_ext_report_params['message'] = media_to_compounds_str 
         report_info = report.create_extended_report(create_ext_report_params)
+
 
         logging.debug(report_info)
 
@@ -180,6 +183,7 @@ class omreegalozMediaPermutations:
         output = {
             'report_name': report_info['name'],
             'report_ref': report_info['ref'],
+
         }
         #END run_omreegalozMediaPermutations
 
