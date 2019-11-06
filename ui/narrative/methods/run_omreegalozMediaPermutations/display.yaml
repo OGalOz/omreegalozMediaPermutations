@@ -46,15 +46,15 @@ parameters :
 
 description : |
     <p> This app runs FBA with or without various compounds on a metabolic model (FBAModel). 
-It uses the apps "Edit Media", "Gapfill Metabolic Model", "Run FBA", and "Compare FBA", all from fba_tools.
+It uses the apps &quot; Edit Media &quot;, &quot; Gapfill Metabolic Model &quot;, &quot; Run FBA &quot;, and &quot; Compare FBA &quot;, all from fba_tools.
     The way to use it would be first to add a Metabolic Model, e.g. a non-gapfilled E-Coli model.
     Second, you choose a base media on which all the FBAs run e.g.  MinimalNMS. 
     Third, you choose a variable media file which includes extra compounds to use - this should be a relatively small file,
     with up to 12 compounds.
     Then you decide if you want to run FBA on each compound individually, or all combinations of compounds.
-    For example, if you ran individually, if you had compounds "A,B,C" in the variable media file,
-    then you would run FBA on the Base Media + "A", Base Media + "B", and Base Media + "C".
-    If you ran all combinations instead of individually with the same compounds ("A","B","C"),
-    Then it would run 8 different FBA, one with "A,B,C", "A,B", "A,C" etc. until it ran FBA on just the base media.
+    For example, if you ran individually, if you had compounds &quot; A,B,C &quot; in the variable media file,
+    then you would run FBA on the Base Media + &quot; A &quot;, Base Media + &quot; B &quot;, and Base Media + &quot; C &quot;.
+    If you ran all combinations instead of individually with the same compounds ( &quot; A &quot;,&quot; B &quot;, &quot; C &quot; ),
+    Then it would run 8 different FBA, one with &quot; A,B,C &quot;, &quot; A,B &quot;, &quot; A,C &quot; etc. until it ran FBA on just the base media.
     In other words it would run on the power set of the compounds. </p>
     
