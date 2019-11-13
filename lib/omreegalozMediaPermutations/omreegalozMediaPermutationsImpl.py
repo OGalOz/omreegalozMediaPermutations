@@ -2,13 +2,17 @@
 #BEGIN_HEADER
 import logging
 import os
+import shutil
 from biokbase.workspace.client import Workspace
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.fba_toolsClient import fba_tools
 from installed_clients.kb_uploadmethodsClient import kb_uploadmethods
+#from installed_clients.DataFileUtilClient import DataFileUtil
 from myothermodule.run_many_fba import run_multiple_media_fba, test_run_fba, create_sample_dict_for_build_mm
 from myothermodule.aux_functions import check_params
 from myothermodule.temporary import upload_file
+from myothermodule.analyze_many_fba import run_analysis_on_dir
+
 #from random import randint
 #END_HEADER
 
@@ -60,7 +64,7 @@ class omreegalozMediaPermutations:
         #BEGIN run_omreegalozMediaPermutations
         report = KBaseReport(self.callback_url)
 
-        create_ext_report_params = {'message': "Compare FBA Results"}
+        create_ext_report_params = dict()
         create_ext_report_params["workspace_name"] = params['workspace_name']
         
 
@@ -119,42 +123,55 @@ class omreegalozMediaPermutations:
             logging.critical("For the media, the workspace function get_object_info_3 did not work as expected.")
             raise Exception("Get Object Info failed - problem with workspace or token?")
 
-        #CHECK GENOME OBJECT, NOT FBA MODEL OBJECT:
+        #CHECK IF FBA MODEL OBJECT:
         if metabolic_model_object_type[:17] == "KBaseFBA.FBAModel":
             logging.info('Succesfully recognized type as FBA Model')
 
             run_dict = dict() 
-            #CHECK THE FOLLOWING:
-            logging.debug('obj name:' + metabolic_model_object_name)
             run_dict["fbamodel_id"] = metabolic_model_object_name
             run_dict["fbamodel_workspace"] = ws_main
-            logging.debug('ws_main' + ws_main)
             run_dict["workspace"] = ws_main
             run_dict["fba_output_id"] = "FBA_Output_Test"
-            logging.debug("base media object name: " + base_med_object_name)
             
             #This is where FBA is called:
-            RESULTS = run_multiple_media_fba(fba_t, run_dict, var_media_tsv_file_location, base_med_object_name, run_type)
+            RESULTS = run_multiple_media_fba(fba_t, run_dict, var_media_tsv_file_location, base_med_object_name, run_type, base_media_ref)
             results_refs_and_names = RESULTS[0]
             media_to_compounds_str = RESULTS[1]
-            fba_ids_list = []
+            fba_refs_list = []
+
+            #Make a directory to store the reactions tsv files
+            all_rxn_tsvs_dir = os.path.join(self.shared_folder,"FBA_TSVs") 
+            os.mkdir(all_rxn_tsvs_dir)
             for fba_result in results_refs_and_names:
                 ref_num = fba_result[0]
-                fba_ids_list.append(ref_num)
-                fba_name = fba_result[1]
-                fba_result_dict = fba_result[2]
-                logging.debug(str(fba_result_dict))
-               
+                fba_refs_list.append(ref_num)
+                #We download the model as a tsv list- it is downloaded into a folder of its name
+                fba_t.export_model_as_tsv_file({"input_ref": ref_num})
+                fba_tsv_name = fba_result[1] + "-reactions.tsv"
+                reactions_tsv_file = os.path.join(self.shared_folder,os.path.join(fba_result[1],fba_tsv_name))
+                # We move the downloaded file to our directory called FBA_TSVs
+                shutil.move(reactions_tsv_file,os.path.join(all_rxn_tsvs_dir,fba_tsv_name))
             
-                #new_obj = ws.get_objects2({'objects':[{'ref': ref_num}]})
-                #result_filename = fba_name + '.txt'
-                #f = open(os.path.join(output_dir_path, result_filename),"w")
-                #f.write(str(new_obj))
-                #f.close()
+            #Analyze the reactions tsvs:
+            run_analysis_on_dir(all_rxn_tsvs_dir, self.shared_folder)
+            comparisons_folder = os.path.join(self.shared_folder, "Comparisons")
+            
+
+               
+           
+            #Here, given the fba ids, we download the TSVs
+            #The fba models will be downloaded into their names:
+
+
+            #new_obj = ws.get_objects2({'objects':[{'ref': ref_num}]})
+            #result_filename = fba_name + '.txt'
+            #f = open(os.path.join(output_dir_path, result_filename),"w")
+            #f.write(str(new_obj))
+            #f.close()
             
 
             #HERE WE RUN COMPARE FBA:
-            
+            """
             comp_fba_params = {"fba_id_list": fba_ids_list, "fbacomparison_output_id": output_name}
             comp_fba_params['workspace'] = ws_main
             comp_fba_ref_dict = fba_t.compare_fba_solutions(comp_fba_params)
@@ -167,12 +184,19 @@ class omreegalozMediaPermutations:
             #f.write(str(new_obj))
             #f.close()
             create_ext_report_params['objects_created'] = [{'ref': new_comp_fba_ref, 'description': "The fba comparison output"}]
+            """
+
 
         #Did not recognize type as FBA Model:
         else:
             logging.critical("Wrong object type!")
             raise Exception("Could not recognize type of object!")
-        create_ext_report_params['message'] = media_to_compounds_str 
+        create_ext_report_params['message'] = media_to_compounds_str
+        file_links_list = []
+        for f in os.listdir(comparisons_folder):
+            file_links_list.append({"path": os.path.join(comparisons_folder,f)})
+
+        create_ext_report_params['file_links'] = file_links_list
         report_info = report.create_extended_report(create_ext_report_params)
 
 

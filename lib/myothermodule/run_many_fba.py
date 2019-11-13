@@ -6,7 +6,7 @@ import logging
 
 #The compounds file must be a TSV media item in the previous form.
 #There is the base media, on top of which the variable media is added.
-def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, base_media_name, run_type):
+def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, base_media_name, run_type, base_media_ref):
     logging.basicConfig(level=logging.DEBUG)
     logging.info("BASE_MEDIA NAME:")
     logging.info(base_media_name)
@@ -14,12 +14,27 @@ def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, ba
     # From the variable media, we create a list of the different permutations in tuple form.
     prepared_tuple_list_d3 = generate_compound_permutations(var_media_file_name, run_type)
     
-    # First, we Generate a Metabolic Model from the Genome and gapfill it on the base media:
-    # parameters for build metabolic model:
     FBA_Results_Refs = []
 
-    media_to_compounds_str = ''
+    #We set the following variable to keep track of the names of media and corresponding compounds added.
+    media_to_compounds_str = base_media_name + ": None added. \n"  
+
+    #Get main workspace id:
     main_workspace = input_dict["workspace"]
+
+    # We run gapfilling and FBA on the base media
+    gapfill_params = create_dict_for_gapfill(input_dict, 'Base', base_media_ref, base_media_name)
+    gapfill_output = fba_tools_object.gapfill_metabolic_model(gapfill_params)
+    fba_input_dict = create_dict_for_run_fba(gapfill_params["fbamodel_output_id"], main_workspace, base_media_name, main_workspace, base_media_ref) 
+    results_from_fba = fba_tools_object.run_flux_balance_analysis(fba_input_dict)
+    new_ref_id = results_from_fba['new_fba_ref']
+    FBA_Results_Refs.append([new_ref_id, fba_input_dict["fba_output_id"], results_from_fba])
+
+
+    #Running through all the newly created media
+    # From the variable media, we create a list of the different permutations in tuple form.
+    prepared_tuple_list_d3 = generate_compound_permutations(var_media_file_name, run_type)
+
     for i in range(len(prepared_tuple_list_d3)):
         compounds_dicts_d2 = prepared_tuple_list_d3[i]
         logging.info("Compound Tuples:")
@@ -32,7 +47,7 @@ def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, ba
         edit_media_params["media_workspace"] = main_workspace
         edit_media_params["media_id"] = base_media_name 
         edit_media_params["compounds_to_add"] = compounds_dicts_d2
-        new_media_id = base_media_name + 'output' + str(i+1)
+        new_media_id = base_media_name + 'output' + str(i)
         edit_media_params["media_output_id"] = new_media_id
         media_to_compounds_str += compound_string_from_compounds_dicts_d2(new_media_id, compounds_dicts_d2)
         #RUN EDIT MEDIA:
@@ -60,16 +75,9 @@ def run_multiple_media_fba(fba_tools_object, input_dict, var_media_file_name, ba
         
         logging.debug(gapfill_output)
         
+
         #Run FBA on the new media
-        fba_input_dict = create_dict_for_run_fba(gapfill_params["fbamodel_output_id"], main_workspace)
-
-        logging.debug(fba_input_dict)
-        fba_input_dict["fba_output_id"] = gapfill_params["fbamodel_output_id"] + "_on_" + edit_media_params["media_output_id"]
-        fba_input_dict["media_id"] = new_media_ref
-        fba_input_dict["media_workspace"] = main_workspace
-        logging.debug(fba_input_dict)
-
-        
+        fba_input_dict = create_dict_for_run_fba(gapfill_params["fbamodel_output_id"], main_workspace, new_media_id, main_workspace, new_media_ref)        
         results_from_fba = fba_tools_object.run_flux_balance_analysis(fba_input_dict)
         new_ref_id = results_from_fba['new_fba_ref']
         FBA_Results_Refs.append([new_ref_id, fba_input_dict["fba_output_id"], results_from_fba])
@@ -132,14 +140,14 @@ def create_sample_dict_for_edit_media():
     return sd
 
 
-def create_dict_for_run_fba(gf_fba_model_id, ws_main):
+def create_dict_for_run_fba(gf_fba_model_id, ws_main, new_media_id, media_workspace, new_media_ref ):
     sd = dict()
     sd["fbamodel_id"] = gf_fba_model_id
     sd["fbamodel_workspace"] = ws_main
-    #sd["media_id"] = media_id - This is done elsewhere
-    #sd["media_workspace"] = ws_main - Done elsewhere
+    sd["media_id"] = new_media_ref
+    sd["media_workspace"] = media_workspace 
     sd["target_reaction"] = "bio1"
-    #sd["fba_output_id"] = fba_output_id - this is done elsewhere
+    sd["fba_output_id"] = gf_fba_model_id + "_on_" + new_media_id
     sd["workspace"] = ws_main
     #sd["thermodynamic_constraints"]=
     sd["fva"] = 1 #needed
