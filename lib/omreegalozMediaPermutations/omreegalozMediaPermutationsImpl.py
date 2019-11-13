@@ -194,7 +194,7 @@ class omreegalozMediaPermutations:
         create_ext_report_params['message'] = media_to_compounds_str
         file_links_list = []
         for f in os.listdir(comparisons_folder):
-            file_links_list.append({"path": os.path.join(comparisons_folder,f)})
+            file_links_list.append({"path": os.path.join(comparisons_folder,f), "name": f, "label": f})
 
         create_ext_report_params['file_links'] = file_links_list
         report_info = report.create_extended_report(create_ext_report_params)
